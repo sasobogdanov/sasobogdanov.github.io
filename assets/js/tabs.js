@@ -4,9 +4,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function loadTabContent(tabName) {
         fetch(`assets/html/${tabName}.html`)
-            .then(response => response.text())
-            .then(html => {
+            .then(response => response.text()).then(html => {
                 contentContainer.innerHTML = html;
+                if (tabName === 'hide' && typeof initHideTab === 'function') {
+                    initHideTab();
+                }
             });
     }
 
