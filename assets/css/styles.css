@@ -1,0 +1,65 @@
+body {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    font-family: "Roboto", sans-serif;
+    font-optical-sizing: auto;
+    font-variation-settings:
+        "wdth" 100;
+}
+
+h1 {
+    font-size: 1.4rem;
+    margin: 0;
+    font-weight: bold;
+}
+
+h2 {
+    font-size: 1.2rem;
+    margin: 0;
+    font-weight: bold;
+}
+
+p {
+    font-size: 1.0rem;
+    margin: 0;
+}
+
+.header-container {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: center;
+    background: #ebebeb;
+}
+
+.tabs-row {
+    display: flex;
+    flex-direction: row;
+    margin-top: 10px;
+}
+
+.tab {
+    padding: 12px 32px;
+    background: #fff;
+    border-radius: 8px 8px 0 0;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.tab.active {
+    background: #afafaf;
+    color: #fff;
+}
+
+.content-container {
+    flex: 1 1 auto;
+    background: #afafaf;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    text-align: center;
+    padding-top: 20px;
+}
