@@ -20,7 +20,7 @@ function initHideTab() {
     imageInput.addEventListener('change', function () {
         const file = this.files[0];
         if (file && file.type.startsWith('image/')) {
-            if (uploadedImageGroup) uploadedImageGroup.style.display = '';
+            uploadedImageGroup.style.display = '';
             const reader = new FileReader();
             reader.onload = function (e) {
                 preview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
@@ -124,29 +124,61 @@ function initHideTab() {
                     return str.split('').map(c => c.charCodeAt(0).toString(2).padStart(8, '0')).join('');
                 }
                 const binMsg = toBinary(encrypted);
-                if (binMsg.length > data.length / 4 * 3) {
+                const msgLen = binMsg.length;
+                const lenBin = msgLen.toString(2).padStart(32, '0');
+                const lenBytes = new Uint8Array(4);
+                lenBytes[0] = (msgLen >>> 24) & 0xFF;
+                lenBytes[1] = (msgLen >>> 16) & 0xFF;
+                lenBytes[2] = (msgLen >>> 8) & 0xFF;
+                lenBytes[3] = msgLen & 0xFF;
+                let lenBinBE = '';
+                for (let i = 0; i < 4; i++) {
+                    lenBinBE += lenBytes[i].toString(2).padStart(8, '0');
+                }
+
+                const fullBin = lenBinBE + binMsg;
+                if (fullBin.length > data.length / 4 * 3) {
                     console.error('Message too large to embed in image.');
                     return;
                 }
 
-                let dataIdx = 0;
-                for (let i = 0; i < binMsg.length; i++) {
-                    const channel = dataIdx % 4;
-                    if (channel === 3) {
-                        dataIdx++;
+                for (let i = 0; i < data.length; i++) {
+                    if ((i % 4) !== 3) {
+                        data[i] = data[i] & 0xFE;
                     }
-                    data[dataIdx] = (data[dataIdx] & 0xFE) | parseInt(binMsg[i], 10);
+                }
+
+                let dataIdx = 0;
+                for (let i = 0; i < lenBinBE.length;) {
+                    if ((dataIdx % 4) !== 3) {
+                        data[dataIdx] = (data[dataIdx] & 0xFE) | parseInt(lenBinBE[i], 10);
+                        i++;
+                    }
                     dataIdx++;
                 }
-                // Optionally, store message length in the first 32 bits (for extraction)
-                // ...not implemented here, but recommended for robust extraction
+                for (let i = 0; i < binMsg.length;) {
+                    if ((dataIdx % 4) !== 3) {
+                        data[dataIdx] = (data[dataIdx] & 0xFE) | parseInt(binMsg[i], 10);
+                        i++;
+                    }
+                    dataIdx++;
+                }
                 ctx.putImageData(imageData, 0, 0);
+
+                // After encoding, log the first 50 LSB bits of the image
+                let lsbBits = '';
+                for (let i = 0, count = 0; i < data.length && count < 50; i++) {
+                    if ((i % 4) !== 3) {
+                        lsbBits += (data[i] & 1).toString();
+                        count++;
+                    }
+                }
+                console.log('First 50 LSB bits after encoding:', lsbBits);
 
                 const stegoDataUrl = canvas.toDataURL('image/png');
 
-                // Use the uploaded image's name with .png extension
                 let originalName = imageInput.files && imageInput.files[0] && imageInput.files[0].name ? imageInput.files[0].name : 'image';
-                let baseName = originalName.replace(/\.[^.]+$/, ''); // remove extension
+                let baseName = originalName.replace(/\.[^.]+$/, '');
                 const a = document.createElement('a');
                 a.href = stegoDataUrl;
                 a.download = baseName + '.png';

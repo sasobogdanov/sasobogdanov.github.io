@@ -9,6 +9,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (tabName === 'hide' && typeof initHideTab === 'function') {
                     initHideTab();
                 }
+                if (tabName === 'reveal' && typeof initRevealTab === 'function') {
+                    initRevealTab();
+                }
             });
     }
 
@@ -26,4 +29,5 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     setActiveTab('hide');
+    // setActiveTab('reveal');
 });

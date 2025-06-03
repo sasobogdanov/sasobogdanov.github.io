@@ -1,5 +1,18 @@
 <div class="reveal-content">
     <h2>Reveal Message</h2>
-    <p>Content for revealing a message from an image.</p>
-    <!-- Add your flexbox elements and UI here -->
+    <input type="file" id="image-upload" accept="image/*" style="display:none;">
+    <div class="btn-container">
+        <button id="upload-btn">Upload Image</button>
+        <button id="remove-btn">Remove Image</button>
+    </div>
+    <div id="uploaded-image-group" style="display:none;">
+        <div id="image-preview"></div>
+        <p id="image-description"></p>
+        <div class="form-group">
+            <label for="password-input">Password:</label>
+            <input type="password" id="password-input" class="input-field"></input>
+        </div>
+        <button id="reveal-message-btn" style="margin-top:20px;">Reveal message</button>
+        <div id="revealed-message" class="input-field"></div>
+    </div>
 </div>

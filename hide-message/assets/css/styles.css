@@ -147,3 +147,11 @@ p {
     margin-top: 2px;
     margin-bottom: 15px;
 }
+
+#revealed-message.input-field {
+    margin-top: 20px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 200px;
+    width: 400px;
+}
