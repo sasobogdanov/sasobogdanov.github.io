@@ -115,7 +115,7 @@ function initHideTab() {
                 const canvas = document.createElement('canvas');
                 canvas.width = tempImg.naturalWidth;
                 canvas.height = tempImg.naturalHeight;
-                const ctx = canvas.getContext('2d');
+                const ctx = canvas.getContext('2d', { willReadFrequently: true });
                 ctx.drawImage(tempImg, 0, 0);
                 const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
                 const data = imageData.data;
@@ -124,20 +124,7 @@ function initHideTab() {
                     return str.split('').map(c => c.charCodeAt(0).toString(2).padStart(8, '0')).join('');
                 }
                 const binMsg = toBinary(encrypted);
-                const msgLen = binMsg.length;
-                const lenBin = msgLen.toString(2).padStart(32, '0');
-                const lenBytes = new Uint8Array(4);
-                lenBytes[0] = (msgLen >>> 24) & 0xFF;
-                lenBytes[1] = (msgLen >>> 16) & 0xFF;
-                lenBytes[2] = (msgLen >>> 8) & 0xFF;
-                lenBytes[3] = msgLen & 0xFF;
-                let lenBinBE = '';
-                for (let i = 0; i < 4; i++) {
-                    lenBinBE += lenBytes[i].toString(2).padStart(8, '0');
-                }
-
-                const fullBin = lenBinBE + binMsg;
-                if (fullBin.length > data.length / 4 * 3) {
+                if (binMsg.length > data.length / 4 * 3) {
                     console.error('Message too large to embed in image.');
                     return;
                 }
@@ -149,14 +136,7 @@ function initHideTab() {
                 }
 
                 let dataIdx = 0;
-                for (let i = 0; i < lenBinBE.length;) {
-                    if ((dataIdx % 4) !== 3) {
-                        data[dataIdx] = (data[dataIdx] & 0xFE) | parseInt(lenBinBE[i], 10);
-                        i++;
-                    }
-                    dataIdx++;
-                }
-                for (let i = 0; i < binMsg.length;) {
+                for (let i = 0; i < binMsg.length && dataIdx < data.length;) {
                     if ((dataIdx % 4) !== 3) {
                         data[dataIdx] = (data[dataIdx] & 0xFE) | parseInt(binMsg[i], 10);
                         i++;
@@ -175,16 +155,23 @@ function initHideTab() {
                 }
                 console.log('First 50 LSB bits after encoding:', lsbBits);
 
-                const stegoDataUrl = canvas.toDataURL('image/png');
+                // Use UPNG.js to export a PNG with no compression
+                const width = canvas.width;
+                const height = canvas.height;
+                const rgba = new Uint8Array(imageData.data.buffer);
+                const pngArrayBuffer = UPNG.encode([rgba.buffer], width, height, 0);
+                const blob = new Blob([pngArrayBuffer], { type: "image/png" });
+                const url = URL.createObjectURL(blob);
 
                 let originalName = imageInput.files && imageInput.files[0] && imageInput.files[0].name ? imageInput.files[0].name : 'image';
                 let baseName = originalName.replace(/\.[^.]+$/, '');
                 const a = document.createElement('a');
-                a.href = stegoDataUrl;
+                a.href = url;
                 a.download = baseName + '.png';
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
+                URL.revokeObjectURL(url);
             };
             tempImg.src = imgTag.src;
         } catch (e) {

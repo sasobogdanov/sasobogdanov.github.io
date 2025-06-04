@@ -29,22 +29,6 @@ function initRevealTab() {
                 const img = new window.Image();
                 img.onload = function () {
                     description.textContent = `Resolution: ${img.naturalWidth} x ${img.naturalHeight}`;
-                    const totalPixels = img.naturalWidth * img.naturalHeight;
-                    const totalLSBBits = totalPixels * 3;
-                    const safetyMargin = 8;
-                    const maxBytes = Math.floor(totalLSBBits / 8) - safetyMargin;
-
-                    function getMaxPlaintextLength(maxBytes) {
-                        for (let M = maxBytes - 44; M > 0; M--) {
-                            const total = M + 44;
-                            const base64Len = Math.ceil(total / 3) * 4;
-                            if (base64Len <= maxBytes) return M;
-                        }
-                        return 0;
-                    }
-
-                    const maxChars = getMaxPlaintextLength(maxBytes);
-                    description.textContent += ` | Max message size: ${maxChars} characters`;
                 };
                 img.src = e.target.result;
             };
@@ -78,78 +62,16 @@ function initRevealTab() {
             ctx.drawImage(tempImg, 0, 0);
             const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
             const data = imageData.data;
+            const lsbBits = extractLSBBits(data);
+            console.log('First 50 LSB bits after reading:', lsbBits.slice(0, 50));
 
-            // Log the first 50 LSB bits from the image for debugging
-            let lsbBits = '';
-            for (let i = 0, count = 0; i < data.length && count < 50; i++) {
-                if ((i % 4) !== 3) {
-                    lsbBits += (data[i] & 1).toString();
-                    count++;
-                }
-            }
-            console.log('First 50 LSB bits read from image:', lsbBits);
+            // Defensive: try to decode as much as possible, but don't loop forever
+            let maxBytes = Math.floor(lsbBits.length / 8);
+            let decoded = bitsToString(lsbBits.slice(0, maxBytes * 8));
 
-            let lenBits = '';
-            let dataIdx = 0;
-            // Defensive: avoid infinite loop if image is corrupted or not a stego image
-            while (lenBits.length < 32 && dataIdx < data.length) {
-                if ((dataIdx % 4) !== 3) {
-                    lenBits += (data[dataIdx] & 1).toString();
-                }
-                dataIdx++;
-            }
-            if (lenBits.length < 32) {
-                revealedMessageDiv.style.display = '';
-                revealedMessageDiv.textContent = 'No hidden message found (invalid or corrupted image).';
-                return;
-            }
-            const msgLen = parseInt(lenBits, 2);
-            console.log('Extracted message length (bits):', msgLen);
-            if (msgLen <= 0 || msgLen > (data.length / 4 * 3)) {
-                revealedMessageDiv.style.display = '';
-                revealedMessageDiv.textContent = 'No valid hidden message found (invalid length).';
-                return;
-            }
-            let bits = '';
-            let bitsRead = 0;
-            // Defensive: avoid infinite loop if msgLen is too large
-            while (bitsRead < msgLen && dataIdx < data.length) {
-                if ((dataIdx % 4) !== 3) {
-                    bits += (data[dataIdx] & 1).toString();
-                    bitsRead++;
-                }
-                dataIdx++;
-            }
-            if (bitsRead < msgLen) {
-                revealedMessageDiv.style.display = '';
-                revealedMessageDiv.textContent = 'Failed to extract full message (image may be corrupted or not a stego image).';
-                return;
-            }
-            const fullBin = lenBits + bits;;
-
-            function bitsToBytes(bits) {
-                const bytes = [];
-                for (let i = 0; i < bits.length; i += 8) {
-                    const byte = bits.substr(i, 8);
-                    if (byte.length < 8) break;
-                    bytes.push(parseInt(byte, 2));
-                }
-                return bytes;
-            }
-            function bytesToBase64(bytes) {
-                let str = '';
-                for (let i = 0; i < bytes.length; i++) {
-                    str += String.fromCharCode(bytes[i]);
-                }
-                return str;
-            }
-            let bytes = bitsToBytes(bits);
-            let base64str = bytesToBase64(bytes);
-            base64str = base64str.replace(/\0+$/, '');
-
-            async function decryptMessage(base64str, password) {
+            async function decryptMessage(encodedMessage, password) {
                 try {
-                    const encrypted = Uint8Array.from(atob(base64str), c => c.charCodeAt(0));
+                    const encrypted = Uint8Array.from(atob(encodedMessage), c => c.charCodeAt(0));
                     const salt = encrypted.slice(0, 16);
                     const iv = encrypted.slice(16, 28);
                     const ciphertext = encrypted.slice(28);
@@ -179,7 +101,7 @@ function initRevealTab() {
                     return null;
                 }
             }
-            const decrypted = await decryptMessage(base64str, password);
+            const decrypted = await decryptMessage(decoded, password);
             revealedMessageDiv.style.display = '';
             if (decrypted) {
                 revealedMessageDiv.textContent = decrypted;
@@ -209,4 +131,24 @@ function resetHideForm() {
     passwordInput.value = '';
     uploadedImageGroup.style.display = 'none';
     revealedMessageDiv.style.display = 'none';
+}
+
+function extractLSBBits(data) {
+    let bits = '';
+    for (let i = 0; i < data.length; i++) {
+        if ((i % 4) !== 3) {
+            bits += (data[i] & 1).toString();
+        }
+    }
+    return bits;
+}
+
+function bitsToString(bits) {
+    let chars = [];
+    for (let i = 0; i < bits.length; i += 8) {
+        let byte = bits.substr(i, 8);
+        if (byte.length < 8) break;
+        chars.push(String.fromCharCode(parseInt(byte, 2)));
+    }
+    return chars.join('');
 }
