@@ -4,6 +4,7 @@ body {
     height: 100vh;
     margin: 0;
     padding: 0;
+    background-color: #e4e4e4;
     font-family: "Roboto", sans-serif;
     font-optical-sizing: auto;
     font-variation-settings:
@@ -25,4 +26,36 @@ h2 {
 p {
     font-size: 1.0rem;
     margin: 0;
+}
+
+.squares-grid {
+    display: grid;
+    justify-content: center;
+    margin-top: 30px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-bottom: 30px;
+}
+
+.square {
+    background: #f0f0f0;
+    border-radius: 12px;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.15);
+    width: 300px;
+    height: 300px;
+    padding: 20px;
+    box-sizing: border-box;
+    margin: 10px;
+}
+
+@media (min-width: 660px) {
+    .squares-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 980px) {
+    .squares-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
 }
