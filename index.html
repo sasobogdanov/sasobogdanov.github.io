@@ -1,38 +1,51 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sašo Bogdanovv</title>
+    <title>Sašo Bogdanov</title>
     <link rel="icon" type="image/png" href="assets/img/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
-        rel="stylesheet">
+          rel="stylesheet">
     <link rel="stylesheet" href="assets/css/styles.css">
+    <!-- Fancybox CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.css"/>
 </head>
 
 <body>
-    <div class="squares-grid">
-        <div class="square">
-            <div class="square-text">
-                <h1>Sašo Bogdanov</h1>
-                <p>Website is under construction. Coming soon! Waiting for a page...</p>
-            </div>
-        </div>
-        <div class="square"></div>
-        <div class="square"></div>
-        <div class="square"></div>
-        <div class="square"></div>
-        <div class="square"></div>
-        <div class="square"></div>
-        <div class="square"></div>
-        <div class="square"></div>
-        <div class="square">
-            <p>Last square</p>
+<div class="squares-grid">
+    <div class="square">
+        <div class="square-text">
+            <h1 id="show-favicon" style="cursor:pointer;">
+                <a data-fancybox style="text-decoration: none;"
+                   href="assets/img/saso_memoji.jpg">Sašo Bogdanov</a></h1>
+            <p class="small-font" style="display:inline; font-size: 0.8rem">Contact: </p>
+            <a class="small-font" style="font-size: 0.8rem"
+               href="mailto:saso.bogdanov@gmail.com">saso.bogdanov@gmail.com</a>
+            <p>Unity developer, advanced C#, Multiplatform deployment
+                (Windows, Android, iOS, WebGL, AR/VR/XR devices), Unreal engine,
+                beginner C++, OpenGL, Python</p>
         </div>
     </div>
+    <div class="square"></div>
+    <div class="square"></div>
+    <div class="square"></div>
+    <div class="square"></div>
+    <div class="square"></div>
+    <div class="square"></div>
+    <div class="square"></div>
+    <div class="square"></div>
+    <div class="square">
+        <p>Born in</p>
+        <p><a class="big-font" style="font-size: 3rem"
+              href="https://www.google.com/maps/place/Slovenia" target="_blank">1984</a></p>
+    </div>
+</div>
+<!-- Fancybox JS -->
+<script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.js"></script>
 </body>
 
 </html>
