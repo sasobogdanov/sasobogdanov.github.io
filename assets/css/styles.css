@@ -7,25 +7,32 @@ body {
     background-color: #e4e4e4;
     font-family: "Roboto", sans-serif;
     font-optical-sizing: auto;
-    font-variation-settings:
-        "wdth" 100;
+    font-variation-settings: "wdth" 100;
 }
 
 h1 {
     font-size: 2.4rem;
     margin: 0;
     font-weight: bold;
+    color: #808080;
 }
 
 h2 {
-    font-size: 1.2rem;
+    font-size: 1.0rem;
     margin: 0;
+    margin-bottom: 0.2rem;
     font-weight: bold;
+    color: #808080;
 }
 
 p {
     font-size: 1.0rem;
     margin: 0;
+}
+
+a {
+    display: inline-block;
+    color: #000;
 }
 
 .squares-grid {
@@ -48,10 +55,10 @@ p {
     margin: 10px;
 }
 
-a {
-    display: inline-block;
-    margin-bottom: 0.5rem;
-    color: #000;
+.cropped-div {
+    overflow: hidden;
+    margin-top: 0.5rem;
+    margin-bottom:0.5rem;
 }
 
 @media (min-width: 660px) {
