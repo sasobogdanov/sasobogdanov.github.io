@@ -48,8 +48,8 @@ a {
     background: #f0f0f0;
     border-radius: 12px;
     box-shadow: 0 1px 5px rgba(0, 0, 0, 0.15);
-    width: 300px;
-    height: 300px;
+    width: 360px;
+    height: 360px;
     padding: 20px;
     box-sizing: border-box;
     margin: 10px;
@@ -61,13 +61,13 @@ a {
     margin-bottom:0.5rem;
 }
 
-@media (min-width: 660px) {
+@media (min-width: 780px) {
     .squares-grid {
         grid-template-columns: repeat(2, 1fr);
     }
 }
 
-@media (min-width: 980px) {
+@media (min-width: 1160px) {
     .squares-grid {
         grid-template-columns: repeat(3, 1fr);
     }
