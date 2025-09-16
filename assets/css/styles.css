@@ -7,25 +7,32 @@ body {
     background-color: #e4e4e4;
     font-family: "Roboto", sans-serif;
     font-optical-sizing: auto;
-    font-variation-settings:
-        "wdth" 100;
+    font-variation-settings: "wdth" 100;
 }
 
 h1 {
     font-size: 2.4rem;
     margin: 0;
     font-weight: bold;
+    color: #808080;
 }
 
 h2 {
-    font-size: 1.2rem;
+    font-size: 1.0rem;
     margin: 0;
+    margin-bottom: 0.2rem;
     font-weight: bold;
+    color: #808080;
 }
 
 p {
     font-size: 1.0rem;
     margin: 0;
+}
+
+a {
+    display: inline-block;
+    color: #000;
 }
 
 .squares-grid {
@@ -41,26 +48,26 @@ p {
     background: #f0f0f0;
     border-radius: 12px;
     box-shadow: 0 1px 5px rgba(0, 0, 0, 0.15);
-    width: 300px;
-    height: 300px;
+    width: 360px;
+    height: 360px;
     padding: 20px;
     box-sizing: border-box;
     margin: 10px;
 }
 
-a {
-    display: inline-block;
-    margin-bottom: 0.5rem;
-    color: #000;
+.cropped-div {
+    overflow: hidden;
+    margin-top: 0.5rem;
+    margin-bottom:0.5rem;
 }
 
-@media (min-width: 660px) {
+@media (min-width: 780px) {
     .squares-grid {
         grid-template-columns: repeat(2, 1fr);
     }
 }
 
-@media (min-width: 980px) {
+@media (min-width: 1160px) {
     .squares-grid {
         grid-template-columns: repeat(3, 1fr);
     }
